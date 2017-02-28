@@ -2,6 +2,12 @@
 import sys
 from binascii import hexlify
 
+def getDevice(DeviceID):
+    Devices = {
+        0x03722093: "XC7Z010",
+    }
+    return Devices.get(DeviceID, "")
+
 def main(argv):
     filename = argv[0]
     print filename
@@ -55,6 +61,16 @@ def main(argv):
                 break
 
             word = int(hexlify(word), 16)
+
+            if word == 0x30018001:
+                word1 = f.read(4)
+                word1 = int(hexlify(word1), 16)
+                Device= getDevice(word1)
+                if Device == "":
+                    print "Device is not supported!"
+                    break
+                else:
+                    print "Found a device:",Device
 
             if word == 0x30002001:
 #                print "FAR register commands"
