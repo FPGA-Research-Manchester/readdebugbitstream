@@ -5,6 +5,7 @@ from binascii import hexlify
 def getDevice(DeviceID):
     Devices = {
         0x03722093: "XC7Z010",
+        0x0484A093: "XCZU9EG",
     }
     return Devices.get(DeviceID, "")
 
