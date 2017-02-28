@@ -34,6 +34,8 @@ def main(argv):
     pre_TB = TB
     pre_RA = RA
     pre_MJA= MJA
+
+    DevFa = ""
     while True:
 #    for i in range(200):
         B4 = B3
@@ -72,6 +74,7 @@ def main(argv):
                     break
                 else:
                     print "Found a device:",Device
+                    DevFa = Device[2]
 
             if word == 0x30002001:
 #                print "FAR register commands"
@@ -83,11 +86,24 @@ def main(argv):
                 word = int(hexlify(word), 16)
                 word3 = int(hexlify(word3), 16)
 
-                BA = (word & 0x03800000) >> 23
-                TB = (word & 0x00400000) >> 22
-                RA = (word & 0x003E0000) >> 17
-                MJA= (word & 0x0001FF80) >> 7
-                MNA= (word & 0x0000007F)
+#                print "Found a device:",DevFa
+#                BA = (word & 0x03800000) >> 23
+#                TB = (word & 0x00400000) >> 22
+#                RA = (word & 0x003E0000) >> 17
+#                MJA= (word & 0x0001FF80) >> 7
+#                MNA= (word & 0x0000007F)
+                if DevFa == "7":
+                    BA = (word & 0x03800000) >> 23
+                    TB = (word & 0x00400000) >> 22
+                    RA = (word & 0x003E0000) >> 17
+                    MJA= (word & 0x0001FF80) >> 7
+                    MNA= (word & 0x0000007F)
+                elif DevFa == "Z":
+                    BA = (word & 0x03800000) >> 23
+                    RA = (word & 0x003E0000) >> 17
+                    MJA= (word & 0x0001FF80) >> 7
+                    MNA= (word & 0x0000007F)
+
                 addr = (word & ~(0x0000007F))
 
                 # check if that frame contains no configuration data
