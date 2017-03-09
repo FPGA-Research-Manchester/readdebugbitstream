@@ -34,6 +34,8 @@ def main(argv):
     pre_TB = TB
     pre_RA = RA
     pre_MJA= MJA
+
+    DevFa = ""
     while True:
 #    for i in range(200):
         B4 = B3
@@ -71,7 +73,9 @@ def main(argv):
                     print "Device is not supported!"
                     break
                 else:
-                    print "Found a device:",Device
+                    print "Found a device:",Device[2:4]
+                    DevFa = Device[2:4]
+                    print "Device family:",DevFa
 
             if word == 0x30002001:
 #                print "FAR register commands"
@@ -83,24 +87,39 @@ def main(argv):
                 word = int(hexlify(word), 16)
                 word3 = int(hexlify(word3), 16)
 
-                BA = (word & 0x03800000) >> 23
-                TB = (word & 0x00400000) >> 22
-                RA = (word & 0x003E0000) >> 17
-                MJA= (word & 0x0001FF80) >> 7
-                MNA= (word & 0x0000007F)
-                addr = (word & ~(0x0000007F))
+                if DevFa == "7Z":
+                    BA = (word & 0x03800000) >> 23
+                    TB = (word & 0x00400000) >> 22
+                    RA = (word & 0x003E0000) >> 17
+                    MJA= (word & 0x0001FF80) >> 7
+                    MNA= (word & 0x0000007F)
+                    addr = (word & ~(0x0000007F))
+                elif DevFa == "ZU":
+                    BA = (word & 0x07000000) >> 24
+                    RA = (word & 0x00FC0000) >> 18
+                    MJA= (word & 0x0003FF00) >> 8
+                    MNA= (word & 0x000000FF)
+                    addr = (word & ~(0x000000FF))
 
                 # check if that frame contains no configuration data
                 if pre_addr == addr and word3 != 0x30008001:
                     NoOfFr = NoOfFr + 1
                 elif word3 != 0x30008001:
-                    print "address:",hex(pre_addr),"column BA:",pre_BA,"TB:",pre_TB,"RA:",pre_RA,"MJA:",pre_MJA,"has no. of frames:",NoOfFr
-                    NoOfFr = 1
-                    pre_BA = BA
-                    pre_TB = TB
-                    pre_RA = RA
-                    pre_MJA= MJA
-                    pre_addr = addr
+                    if DevFa == "7Z":
+                        print "address:",hex(pre_addr),"column BA:",pre_BA,"TB:",pre_TB,"RA:",pre_RA,"MJA:",pre_MJA,"has no. of frames:",NoOfFr
+                        NoOfFr = 1
+                        pre_BA = BA
+                        pre_TB = TB
+                        pre_RA = RA
+                        pre_MJA= MJA
+                        pre_addr = addr
+                    elif DevFa == "ZU":
+                        print "address:",hex(pre_addr),"column BA:",pre_BA,"RA:",pre_RA,"MJA:",pre_MJA,"has no. of frames:",NoOfFr
+                        NoOfFr = 1
+                        pre_BA = BA
+                        pre_RA = RA
+                        pre_MJA= MJA
+                        pre_addr = addr
     else:
         print "Couldn't find the SYNC word - Invalide bitfile"
 
