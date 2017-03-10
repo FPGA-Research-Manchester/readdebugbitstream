@@ -5,6 +5,7 @@ from binascii import hexlify
 def getDevice(DeviceID):
     Devices = {
         0x03722093: "XC7Z010",
+        0x03727093: "XC7Z020",
         0x0484A093: "XCZU9EG",
     }
     return Devices.get(DeviceID, "")
@@ -73,7 +74,7 @@ def main(argv):
                     print "Device is not supported!"
                     break
                 else:
-                    print "Found a device:",Device[2:4]
+                    print "Found a device:",Device
                     DevFa = Device[2:4]
                     print "Device family:",DevFa
 
