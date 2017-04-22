@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
 import sys
+import csv
 from binascii import hexlify
 
-def getDevice(DeviceID):
-    Devices = {
-        0x03722093: "XC7Z010",
-        0x03727093: "XC7Z020",
-        0x0484A093: "XCZU9EG",
-    }
-    return Devices.get(DeviceID, "")
+#def getDevice(DeviceID):
+#    Devices = {
+#        0x03722093: "XC7Z010",
+#        0x03727093: "XC7Z020",
+#        0x0484A093: "XCZU9EG",
+#    }
+#    return Devices.get(DeviceID, "")
 
 def main(argv):
     filename = argv[0]
+    fileCSV = ('devices.csv')
     print filename
     f = open(filename, 'r+')
+    f_csv = open(fileCSV, 'r+')
+
+    reader = csv.reader(f_csv)
 
     Sync = 0
 
@@ -36,6 +41,7 @@ def main(argv):
     pre_RA = RA
     pre_MJA= MJA
 
+    Device= ""
     DevFa = ""
     while True:
 #    for i in range(200):
@@ -68,8 +74,12 @@ def main(argv):
 
             if word == 0x30018001:
                 word1 = f.read(4)
-                word1 = int(hexlify(word1), 16)
-                Device= getDevice(word1)
+                word1 = hexlify(word1)
+                for row in reader:
+                    if word1 == row[0]:
+                        Device =  row[1]
+#                word1 = int(hexlify(word1), 16)
+#                Device= getDevice(word1)
                 if Device == "":
                     print "Device is not supported!"
                     break
