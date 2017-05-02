@@ -75,8 +75,9 @@ def main(argv):
             if word == 0x30018001:
                 word1 = f.read(4)
                 word1 = hexlify(word1)
+#                print word1
                 for row in reader:
-                    if word1 == row[0]:
+                    if int(word1, 16) == int(row[0], 16):
                         Device =  row[1]
 #                word1 = int(hexlify(word1), 16)
 #                Device= getDevice(word1)
