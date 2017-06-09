@@ -29,17 +29,26 @@ def main(argv):
 
     addr = 0
     pre_addr = 0
+    row_addr = 0
+    pre_row_addr = 0
     BA = 0      # Block type [25:23]
     TB = 0      # Top/bottom bit [22]
     RA = 0      # Row address [21:17]
     MJA= 0      # Column address [16:7]
     MNA= 0      # Minor address [6:0]
+    row_BA = 0      # Block type [25:23]
+    row_TB = 0      # Top/bottom bit [22]
+    row_RA = 0      # Row address [21:17]
     NoOfFr = 0
+    NoOfFrPerRow = 0
 
     pre_BA = BA
     pre_TB = TB
     pre_RA = RA
     pre_MJA= MJA
+    pre_row_BA = row_BA
+    pre_row_TB = row_TB
+    pre_row_RA = row_RA
 
     Device= ""
     DevFa = ""
@@ -103,20 +112,29 @@ def main(argv):
                     BA = (word & 0x03800000) >> 23
                     TB = (word & 0x00400000) >> 22
                     RA = (word & 0x003E0000) >> 17
+                    row_BA = (word & 0x03800000) >> 23
+                    row_TB = (word & 0x00400000) >> 22
+                    row_RA = (word & 0x003E0000) >> 17
                     MJA= (word & 0x0001FF80) >> 7
                     MNA= (word & 0x0000007F)
                     addr = (word & ~(0x0000007F))
+                    row_addr = (word & ~(0x0001FFFF))
                 elif DevFa == "ZU":
                     BA = (word & 0x07000000) >> 24
                     RA = (word & 0x00FC0000) >> 18
+                    row_BA = (word & 0x07000000) >> 24
+                    row_RA = (word & 0x00FC0000) >> 18
                     MJA= (word & 0x0003FF00) >> 8
                     MNA= (word & 0x000000FF)
                     addr = (word & ~(0x000000FF))
+                    row_addr = (word & ~(0x0003FFFF))
 
                 # check if that frame contains no configuration data
-                if pre_addr == addr and word3 != 0x30008001:
+#if pre_addr == addr and word3 != 0x30008001:
+                if pre_addr == addr:
                     NoOfFr = NoOfFr + 1
-                elif word3 != 0x30008001:
+#elif word3 != 0x30008001:
+                else:
                     if DevFa == "7Z":
                         print "address:",hex(pre_addr),"column BA:",pre_BA,"TB:",pre_TB,"RA:",pre_RA,"MJA:",pre_MJA,"has no. of frames:",NoOfFr
                         NoOfFr = 1
@@ -132,8 +150,28 @@ def main(argv):
                         pre_RA = RA
                         pre_MJA= MJA
                         pre_addr = addr
+
+                # check if that frame contains no configuration data
+#if pre_row_addr == row_addr and word3 != 0x30008001:
+                if pre_row_addr == row_addr:
+                    NoOfFrPerRow = NoOfFrPerRow + 1
+#elif word3 != 0x30008001:
+                else:
+                    if DevFa == "7Z":
+                        print "Row BA:",pre_row_BA,"TB:",pre_row_TB,"RA:",pre_row_RA,"has no. of frames:",NoOfFrPerRow
+                        NoOfFrPerRow = 1
+                        pre_row_BA = row_BA
+                        pre_row_TB = row_TB
+                        pre_row_RA = row_RA
+                        pre_row_addr = row_addr
+                    elif DevFa == "ZU":
+                        print "Row BA:",pre_row_BA,"RA:",pre_row_RA,"has no. of frames:",NoOfFrPerRow
+                        NoOfFrPerRow = 1
+                        pre_row_BA = row_BA
+                        pre_row_RA = row_RA
+                        pre_row_addr = row_addr
     else:
-        print "Couldn't find the SYNC word - Invalide bitfile"
+        print "Couldn't find the SYNC word - Invalid bitfile"
 
     print "end of file!"
     f.close()
