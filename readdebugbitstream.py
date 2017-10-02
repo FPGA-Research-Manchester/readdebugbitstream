@@ -233,6 +233,47 @@ def main(argv):
                     pre_row_TB = row_TB
                     pre_row_RA = row_RA
                     pre_row_addr = row_addr
+
+            if word == 0x30010001 and DevFa == "7V":
+                word = f.read(4)
+                word1 = f.read(4)
+
+                word = int(hexlify(word), 16)
+                word1 = int(hexlify(word1), 16)
+
+                BA = (word & 0x03800000) >> 23
+                TB = (word & 0x00400000) >> 22
+                RA = (word & 0x003E0000) >> 17
+                row_BA = (word & 0x03800000) >> 23
+                row_TB = (word & 0x00400000) >> 22
+                row_RA = (word & 0x003E0000) >> 17
+                MJA= (word & 0x0001FF80) >> 7
+                MNA= (word & 0x0000007F)
+                addr = (word & ~(0x0000007F))
+                row_addr = (word & ~(0x0001FFFF))
+
+                # check if that frame contains no configuration data
+                if pre_addr == addr:
+                    NoOfFr = NoOfFr + 1
+                else:
+                    print "address:",hex(pre_addr),"column BA:",pre_BA,"TB:",pre_TB,"RA:",pre_RA,"MJA:",pre_MJA,"has no. of frames:",NoOfFr
+                    NoOfFr = 1
+                    pre_BA = BA
+                    pre_TB = TB
+                    pre_RA = RA
+                    pre_MJA= MJA
+                    pre_addr = addr
+
+                # check if that frame contains no configuration data
+                if pre_row_addr == row_addr:
+                    NoOfFrPerRow = NoOfFrPerRow + 1
+                else:
+                    print "Row BA:",pre_row_BA,"TB:",pre_row_TB,"RA:",pre_row_RA,"has no. of frames:",NoOfFrPerRow
+                    NoOfFrPerRow = 1
+                    pre_row_BA = row_BA
+                    pre_row_TB = row_TB
+                    pre_row_RA = row_RA
+                    pre_row_addr = row_addr
     else:
         print "Couldn't find the SYNC word - Invalid bitfile"
 
