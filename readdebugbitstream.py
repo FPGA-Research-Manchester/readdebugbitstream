@@ -119,7 +119,7 @@ def main(argv):
                     MNA= (word & 0x0000007F)
                     addr = (word & ~(0x0000007F))
                     row_addr = (word & ~(0x0001FFFF))
-                elif DevFa == "ZU":
+                elif DevFa == "ZU" or DevFa == "VU":
                     BA = (word & 0x07000000) >> 24
                     RA = (word & 0x00FC0000) >> 18
                     row_BA = (word & 0x07000000) >> 24
